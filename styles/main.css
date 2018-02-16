@@ -1,3 +1,10 @@
-h1 { 
+h1 {
 	 font-family: Helvetica, sans serif;
+	 font-size: 1.9em;
+	 text-align:  center;
+}
+
+#time-input{
+	width:75px;
+	display: inline;
 }
