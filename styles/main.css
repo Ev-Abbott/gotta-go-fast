@@ -1,16 +1,27 @@
+body {
+	padding: 10px;
+	background-color: black;
+}
+
 h1 {
+	 color: white;
 	 font-family: Helvetica, sans serif;
-	 font-size: 1.9em;
 	 text-align: center;
+	 margin-bottom: 15px;
 }
 
 h2, h4, p {
+	color: white;
 	font-family: Helvetica, sans serif;
 	text-align: center;
 }
 
 h4 {
 	font-weight: 300;
+}
+
+.modal-header {
+	text-align: center;
 }
 
 #time-input{
@@ -24,6 +35,9 @@ h4 {
 }
 
 #video-description {
-	padding: 5px;
+	margin-bottom: 15px;
+}
+
+#video-box {
 	margin-bottom: 15px;
 }

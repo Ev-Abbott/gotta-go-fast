@@ -16,7 +16,7 @@ function generateRandomSpeedrun(e) {
   e.preventDefault();
   const videoDescription = document.createElement('div');
   const timeInput = parseInt(input.value) * 60;
-  durationMin= 0;
+  durationMin = 0;
   durationMax = 0;
   setDurationMinAndMax(timeInput);
   if(input.value.length > 0) {
@@ -124,16 +124,19 @@ function checkURLType(videoURL) {
 function setDurationMinAndMax(integer) {
   if (integer < 301) {
     durationMin = 0;
-    durationMax = integer*2;
+    durationMax = integer*1.5;
   } else if (integer < 901) {
     durationMin = integer*0.75;
     durationMax = integer*1.5;
   } else if (integer < 1801) {
     durationMin = integer*0.85;
     durationMax = integer*1.35;
-  } else {
+  } else if (integer < 7201) {
     durationMin = integer*0.85;
     durationMax = integer*1.15;
+  } else {
+    durationMin = integer*0.80;
+    durationMax = integer*1.20;
   }
   durationMin = Math.floor(durationMin);
   durationMax = Math.floor(durationMax);
@@ -223,7 +226,7 @@ function formatDataProper(data) {
       runInfoToSend.platform = runInfo.platform.data.name;
       runInfoToSend.players = runInfo.players;
       runInfoToSend.videos = runInfo.videos;
-      runInfoToSend.date = runInfo.date;
+      runInfoToSend.date = moment(runInfo.date).format('MMMM Do YYYY');
       runInfoToSend.run_time = toHHMMSS(runInfo.times.primary_t);
       return runInfoToSend;
     })

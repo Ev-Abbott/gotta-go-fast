@@ -14,11 +14,11 @@
 				<form id="speedrun-search" class="d-flex flex-column justify-content-center">
 					<h1>
 						Show me a world record speedrun that is
-						<span>approximately</span>
-						<input type="number" class="form-control" id="time-input" placeholder="Enter time in minutes">
-						minutes long.
+						<span>approximately</span>...
 					</h1>
-					<button type="submit" class="btn btn-primary">Generate Game Now</button>
+					<h1><input type="number" class="form-control" id="time-input" placeholder="#...">
+					minutes long.</h1>
+					<button type="submit" class="btn btn-primary">Find Game</button>
 				</form>
 			</div>
 			<div id="video-description" class="row d-flex flex-lg-column justify-content-center">
@@ -28,15 +28,26 @@
 
 			</div>
 		</div>
+
 		<div class="modal fade" id="loading-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-		  <div class="modal-dialog" role="document">
+		  <div class="modal-dialog modal-dialog-centered" role="document">
 		    <div class="modal-content">
 		      <div class="modal-header">
-		        <h5 class="modal-title" id="loading-modal-label">Looking for a random speedrun. This may take awhile.<i class="fa fa-spinner fa-spin" style="font-size:24px"></i></h5>
+						<div class="d-flex flex-column">
+							<i class="fa fa-spinner fa-spin" style="font-size:24px"></i>
+							<h5 class="modal-title" id="loading-modal-label">Looking for a random world record speedrun...</h5>
+						</div>
 		      </div>
+					<div class="modal-body">
+						<div class="d-flex justify-content-center">
+							<span>This may take awhile.</span>
+						</div>
+					</div>
 		    </div>
 		  </div>
 		</div>
+
+		<script src="./moment.min.js"></script>
 		<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 		<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
