@@ -20,14 +20,17 @@ function generateRandomSpeedrun(e) {
   durationMax = 0;
   setDurationMinAndMax(timeInput);
   if(input.value.length > 0) {
+    $('#loading-modal').modal('show');
     clearVideoDescription();
     clearVideoBox();
     fetchSpeedrunData()
       .then((res) => {
         renderVideoDescription(res);
         renderVideo(res.videos.links[0].uri);
+        $('#loading-modal').modal('hide');
       })
       .catch((err) => {
+        $('#loading-modal').modal('hide');
         console.log(err);
       });
   }
