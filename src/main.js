@@ -1,11 +1,12 @@
 const speedrunSearchForm = document.getElementById('speedrun-search');
 const formContainer = document.getElementById('form-container');
+const videoDescription = document.getElementById('video-description');
+const videoBox = document.getElementById('video-box');
 const input = document.getElementById('time-input');
 const baseURL = 'https://www.speedrun.com/api/v1';
 const bulkURL = '/games?_bulk=yes&max=1000';
 let numberOfRecordsInThousands = 13;
 let gameArrayToCheck;
-let gameData;
 let durationMin;
 let durationMax;
 
@@ -19,12 +20,12 @@ function generateRandomSpeedrun(e) {
   durationMax = 0;
   setDurationMinAndMax(timeInput);
   if(input.value.length > 0) {
+    clearVideoDescription();
+    clearVideoBox();
     fetchSpeedrunData()
       .then((res) => {
-        // set bullshit
-        // append to the doc
-        // formContainer.appendChild(videoDescription);
-        console.log(res);
+        renderVideoDescription(res);
+        renderVideo(res.videos.links[0].uri);
       })
       .catch((err) => {
         console.log(err);
@@ -33,7 +34,90 @@ function generateRandomSpeedrun(e) {
 
   input.value = '';
 }
-
+function renderVideoDescription(data) {
+  const title = document.createElement('h2');
+  const subtitle = document.createElement('h4');
+  const bio = document.createElement('h4');
+  const platform = document.createElement('h4');
+  title.textContent = `${data.game_name}`;
+  subtitle.textContent = `Category: ${data.category} | Run Time: ${data.run_time}`;
+  bio.textContent = `Run by: ${data.players.data[0].names.international} | Date of Run: ${data.date}`;
+  platform.textContent = `Game Platform: ${data.platform}`;
+  videoDescription.appendChild(title);
+  videoDescription.appendChild(subtitle);
+  videoDescription.appendChild(bio);
+  videoDescription.appendChild(platform);
+}
+function renderVideo(videoURL) {
+  const type = checkURLType(videoURL);
+  switch(type) {
+    case 'TWITCH':
+      renderTwitchVideo(videoURL);
+      break;
+    case 'YOUTUBE':
+      renderYouTubeVideo(videoURL);
+      break;
+    case 'YOUTUBE_SHORT':
+      renderYoutubeShortVideo(videoURL);
+      break;
+    default:
+      videoBox.textContent = 'Unsupported Video Type';
+  }
+}
+function renderTwitchVideo(videoURL) {
+    const check = '.tv/videos/';
+    const index = videoURL.indexOf(check);
+    const videoId = videoURL.slice(index+check.length);
+    const iFrame = document.createElement('iframe');
+    iFrame.setAttribute('src', `https://player.twitch.tv/?autoplay=false&video=v${videoId}`);
+    iFrame.setAttribute('frameborder', 0);
+    iFrame.setAttribute('allowfullscreen', true);
+    iFrame.setAttribute('scrolling', 'no');
+    iFrame.setAttribute('height', 378);
+    iFrame.setAttribute('width', 620);
+    videoBox.appendChild(iFrame);
+  }
+function renderYouTubeVideo(videoURL) {
+  const check = '.com/watch?v=';
+  const index = videoURL.indexOf(check);
+  const videoId = videoURL.slice(index+check.length);
+  const iFrame = document.createElement('iframe');
+  iFrame.setAttribute('src', `https://www.youtube.com/embed/${videoId}`);
+  iFrame.setAttribute('frameborder', 0);
+  iFrame.setAttribute('allow', 'autoplay; encrypted-media');
+  iFrame.setAttribute('allowfullscreen', true);
+  iFrame.setAttribute('height', 315);
+  iFrame.setAttribute('width', 560);
+  videoBox.appendChild(iFrame);
+}
+function renderYoutubeShortVideo(videoURL) {
+  const check = 'tu.be/';
+  const index = videoURL.indexOf(check);
+  const videoId = videoURL.slice(index+check.length);
+  const iFrame = document.createElement('iframe');
+  iFrame.setAttribute('src', `https://www.youtube.com/embed/${videoId}`);
+  iFrame.setAttribute('frameborder', 0);
+  iFrame.setAttribute('allow', 'autoplay; encrypted-media');
+  iFrame.setAttribute('allowfullscreen', true);
+  iFrame.setAttribute('height', 315);
+  iFrame.setAttribute('width', 560);
+  videoBox.appendChild(iFrame);
+}
+function checkURLType(videoURL) {
+  const twitchURL = 'https://www.twitch.tv/';
+  const youtubeURL = 'https://www.youtube.com/';
+  const youtubeShortURL = 'https://youtu.be/';
+  const hitboxURL = '';
+  const vimeoURL = '';
+  const nicoVideoURL = '';
+  if (videoURL.includes(twitchURL)) {
+    return 'TWITCH';
+  } else if (videoURL.includes(youtubeURL)) {
+    return 'YOUTUBE';
+  } else if (videoURL.includes(youtubeShortURL)){
+    return 'YOUTUBE_SHORT';
+  }
+}
 function setDurationMinAndMax(integer) {
   if (integer < 301) {
     durationMin = 0;
@@ -51,7 +135,6 @@ function setDurationMinAndMax(integer) {
   durationMin = Math.floor(durationMin);
   durationMax = Math.floor(durationMax);
 }
-
 function fetchSpeedrunData() {
   let databaseSliceToCheck = getRandomInt(numberOfRecordsInThousands);
   let urlToQuery = `${baseURL}${bulkURL}`;
@@ -66,9 +149,7 @@ function fetchSpeedrunData() {
     return getDatabaseSlice(urlToQuery);
   }
 }
-
 function getDatabaseSlice(urlToQuery) {
-  console.log(urlToQuery);
   return axios.get(urlToQuery)
     .then((response) => {
       gameArrayToCheck = response.data.data;
@@ -78,15 +159,15 @@ function getDatabaseSlice(urlToQuery) {
       console.log(`ERROR: ${err}`);
     });
 }
-
 function getRandomGameData(array) {
   let index = getRandomInt(array.length-1);
   let id = array[index].id;
-  gameData = array[index];
+  let gameData = array[index];
   array.splice(index, 1);
   return axios.get(`${baseURL}/games/${id}/records?top=1`)
     .then((result) => {
-      let time;
+      let successfulSearch = false;
+      let data;
       let categoryList = result.data.data;
       categoryList.forEach((category) => {
         let run;
@@ -95,19 +176,31 @@ function getRandomGameData(array) {
         }
         if (run) {
           let times = run.times;
+          let videos = run.videos;
           let pTime = times.primary_t;
           let convertedTime = toHHMMSS(pTime);
           if (pTime > durationMin-1 && pTime < durationMax+1) {
-            time = convertedTime;
+            if (videos) {
+              if(!data) {
+                console.log('Success!');
+                data = {
+                  run_id: run.id,
+                  game_id: run.game,
+                  category_id: run.category,
+                  platform_id: run.system.platform,
+                  date: run.date,
+                  user: run.players,
+                  time: convertedTime,
+                  videos: videos
+                };
+                successfulSearch = true;
+              }
+            }
           }
         }
       });
-      if (time) {
-        return {
-          duration: time,
-          game: gameData,
-          dataDump: result.data.data
-        };
+      if (successfulSearch) {
+        return formatDataProper(data);
       } else if (array.length < 1) {
         return {
           err: 'could not find'
@@ -117,11 +210,27 @@ function getRandomGameData(array) {
       }
     });
 }
-
+function formatDataProper(data) {
+  let runInfoToSend = {};
+  return axios.get(`${baseURL}/runs/${data.run_id}?embed=players,category,game,platform`)
+    .then((res) => {
+      const runInfo = res.data.data;
+      runInfoToSend.category = runInfo.category.data.name;
+      runInfoToSend.game_name = runInfo.game.data.names.international;
+      runInfoToSend.platform = runInfo.platform.data.name;
+      runInfoToSend.players = runInfo.players;
+      runInfoToSend.videos = runInfo.videos;
+      runInfoToSend.date = runInfo.date;
+      runInfoToSend.run_time = toHHMMSS(runInfo.times.primary_t);
+      return runInfoToSend;
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+}
 function getRandomInt(max) {
   return Math.floor(Math.random() * Math.floor(max));
 }
-
 function toHHMMSS (secs) {
     var sec_num = parseInt(secs, 10)
     var hours   = Math.floor(sec_num / 3600) % 24
@@ -131,4 +240,14 @@ function toHHMMSS (secs) {
         .map(v => v < 10 ? "0" + v : v)
         .filter((v,i) => v !== "00" || i > 0)
         .join(":")
+}
+function clearVideoBox() {
+  while(videoBox.firstChild) {
+    videoBox.removeChild(videoBox.firstChild);
+  }
+}
+function clearVideoDescription() {
+  while(videoDescription.firstChild) {
+    videoDescription.removeChild(videoDescription.firstChild);
+  }
 }

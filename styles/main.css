@@ -1,10 +1,28 @@
 h1 {
 	 font-family: Helvetica, sans serif;
 	 font-size: 1.9em;
-	 text-align:  center;
+	 text-align: center;
+}
+
+h2, h4, p {
+	font-family: Helvetica, sans serif;
+	text-align: center;
+}
+
+h4 {
+	font-weight: 300;
 }
 
 #time-input{
 	width:75px;
 	display: inline;
+}
+
+#form-container{
+	margin-bottom: 15px;
+}
+
+#video-description {
+	padding: 5px;
+	margin-bottom: 15px;
 }
