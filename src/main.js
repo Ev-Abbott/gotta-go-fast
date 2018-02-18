@@ -33,22 +33,21 @@ function generateRandomSpeedrun(e) {
         $('#loading-modal').modal('hide');
         console.log(err);
       });
+  } else {
+    $('#error-modal').modal('show');
   }
 
   input.value = '';
 }
 function renderVideoDescription(data) {
-  const title = document.createElement('h2');
-  const subtitle = document.createElement('h4');
-  const bio = document.createElement('h4');
-  const platform = document.createElement('h4');
-  title.textContent = `${data.game_name}`;
-  subtitle.textContent = `Category: ${data.category} | Run Time: ${data.run_time}`;
-  bio.textContent = `Run by: ${data.players.data[0].names.international} | Date of Run: ${data.date}`;
-  platform.textContent = `Game Platform: ${data.platform}`;
+  const title = document.createElement('h4');
+  const subtitle = document.createElement('h5');
+  const platform = document.createElement('h5');
+  title.textContent = `${data.game_name} | ${data.run_time}`;
+  subtitle.textContent = `${data.category} | ${data.date}`;
+  platform.textContent = `${data.players.data[0].names.international} | ${data.platform}`;
   videoDescription.appendChild(title);
   videoDescription.appendChild(subtitle);
-  videoDescription.appendChild(bio);
   videoDescription.appendChild(platform);
 }
 function renderVideo(videoURL) {
@@ -124,7 +123,7 @@ function checkURLType(videoURL) {
 function setDurationMinAndMax(integer) {
   if (integer < 301) {
     durationMin = 0;
-    durationMax = integer*1.5;
+    durationMax = 300;
   } else if (integer < 901) {
     durationMin = integer*0.75;
     durationMax = integer*1.5;
