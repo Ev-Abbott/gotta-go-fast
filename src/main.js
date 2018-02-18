@@ -40,15 +40,65 @@ function generateRandomSpeedrun(e) {
   input.value = '';
 }
 function renderVideoDescription(data) {
+  console.log(data);
   const title = document.createElement('h4');
   const subtitle = document.createElement('h5');
-  const platform = document.createElement('h5');
+  const userLink = document.createElement('a');
+  const userText = document.createElement('h5');
+  const socialContainer = document.createElement('div');
+  const iconBox = document.createElement('div');
+  let iconExists = false;
+  let divider;
+
+  socialContainer.classList = 'd-flex justify-content-center';
+  iconBox.classList = 'd-flex flex-row icon-box';
   title.textContent = `${data.game_name} | ${data.run_time}`;
-  subtitle.textContent = `${data.category} | ${data.date}`;
-  platform.textContent = `${data.players.data[0].names.international} | ${data.platform}`;
+  subtitle.textContent = `${data.category} | ${data.date} | ${data.platform}`;
+  userText.textContent = `${data.players.data[0].names.international}`;
+  userText.classList.add('links');
+  userLink.setAttribute('href', data.players.data[0].weblink);
+
+  if(data.players.data[0].twitch) {
+    const twitchLink = document.createElement('a');
+    const twitchIcon = document.createElement('i');
+    twitchIcon.classList = 'fa fa-twitch fa-lg icon';
+    twitchLink.setAttribute('href', data.players.data[0].twitch.uri);
+    twitchLink.appendChild(twitchIcon);
+    iconBox.appendChild(twitchLink);
+    iconExists = true;
+  }
+  if(data.players.data[0].twitter) {
+    const twitterLink = document.createElement('a');
+    const twitterIcon = document.createElement('i');
+    twitterIcon.classList = 'fa fa-twitter fa-lg icon';
+    twitterLink.setAttribute('href', data.players.data[0].twitter.uri);
+    twitterLink.appendChild(twitterIcon);
+    iconBox.appendChild(twitterLink);
+    iconExists = true;
+  }
+  if(data.players.data[0].youtube) {
+    const youtubeLink = document.createElement('a');
+    const youtubeIcon = document.createElement('i');
+    youtubeIcon.classList = 'fa fa-youtube fa-lg icon';
+    youtubeLink.setAttribute('href', data.players.data[0].youtube.uri);
+    youtubeLink.appendChild(youtubeIcon);
+    iconBox.appendChild(youtubeLink);
+    iconExists = true;
+  }
+  if(iconExists) {
+    divider = document.createElement('h5');
+    divider.classList = 'divider';
+    divider.textContent = ' | ';
+  }
   videoDescription.appendChild(title);
   videoDescription.appendChild(subtitle);
-  videoDescription.appendChild(platform);
+  userLink.appendChild(userText);
+  socialContainer.appendChild(iconBox);
+  if(divider) {
+    socialContainer.appendChild(divider);
+  }
+  socialContainer.appendChild(userLink);
+  videoDescription.appendChild(socialContainer);
 }
 function renderVideo(videoURL) {
   const type = checkURLType(videoURL);

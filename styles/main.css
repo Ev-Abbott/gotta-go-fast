@@ -33,14 +33,31 @@ h4 {
 
 h5 {
 	font-weight: 100;
+	color: #666;
 }
 
+.links {
+	color: blue;
+}
 .modal-header {
 	text-align: center;
 }
-
+.modal-title {
+	color: black;
+	font-weight: 500;
+}
+.icon-box {
+	margin-right: 15px;
+}
+.icon {
+	margin-right: 5px;
+}
+.divider {
+	margin-right: 15px;
+}
 #time-input{
 	width:75px;
+	margin-right: 5px;
 	display: inline;
 }
 
@@ -55,9 +72,4 @@ h5 {
 
 #video-box {
 	margin-bottom: 15px;
-}
-
-.modal-title {
-	color: black;
-	font-weight: 500;
 }
