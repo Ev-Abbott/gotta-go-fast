@@ -1,41 +1,60 @@
 body {
-	padding: 10px;
 	background-color: black;
+	font-family: 'Press Start 2P', cursive;
+	color: #333;
 }
 
 h1, h3 {
 	 color: white;
-	 font-family: Helvetica, sans serif;
 	 text-align: center;
 	 margin: 0;
 }
 
 h1 {
 	font-weight: 300;
-	font-size: 1.5em;
+	font-size: 1em;
 	margin-bottom: 15px;
 }
 
 h3 {
 	font-weight: 100;
-	font-size: 1.25em;
 }
 
 h4, h5 {
 	color: white;
-	font-family: Helvetica, sans serif;
 	text-align: center;
 }
 
 h4 {
-	font-weight: 500;
+	font-size: 1em;
+	font-weight: 100;
 }
 
 h5 {
 	font-weight: 100;
 	color: #666;
+	font-size: 0.75em;
 }
 
+p {
+	font-size: 0.75em;
+	margin: 0;
+}
+
+button {
+	width: 95%;
+}
+
+footer {
+	text-align: center;
+	font-size: 0.5em;
+	padding: 10px;
+}
+
+
+.title {
+	color: #999;
+}
 .links {
 	color: blue;
 }
@@ -55,21 +74,31 @@ h5 {
 .divider {
 	margin-right: 15px;
 }
+
 #time-input{
-	width:75px;
-	margin-right: 5px;
+	width: 100px;
 	display: inline;
+	background-color: black;
+	color: white;
+	margin-bottom: 10px;
 }
 
 #form-container{
 	margin-top: 15px;
 	margin-bottom: 15px;
+	max-width: 510px;
 }
 
 #video-description {
+	padding: 10px;
 	margin-bottom: 15px;
+	max-width: 510px;
 }
 
 #video-box {
+	margin-bottom: 15px;
+}
+
+#coffee {
 	margin-bottom: 15px;
 }

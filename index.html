@@ -3,29 +3,62 @@
 	<head>
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-		<title>title</title>
+		<title>Find a Cool Speedrun!</title>
+		<link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet">
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
 		<link rel="stylesheet" href="./styles/main.css" />
 	</head>
 	<body>
+		<div class="container-fluid">
+			<div class="d-flex flex-column align-items-center">
+				<i class="fa fa-gamepad title" style="font-size:24px"></i>
+				<h1 class="title">GottaGoFast.Games</h1>
+			</div>
+		</div>
 		<div class="container">
-			<div id="form-container" class="row d-flex justify-content-center">
-				<form id="speedrun-search" class="d-flex flex-column justify-content-center">
-					<h1>
-						Show me a world record speedrun that is approximately...
-					</h1>
-					<h1><input type="number" class="form-control" id="time-input" placeholder="#...">
-					minutes long.</h1>
-					<button type="submit" class="btn btn-outline-light"><h3>Find Game</h3></button>
-				</form>
-			</div>
-			<div id="video-box" class="row d-flex justify-content-center">
+			<header class="d-flex justify-content-center">
+				<div id="form-container" class="row d-flex justify-content-center">
+					<form id="speedrun-search" class="d-flex flex-column align-items-center">
+						<h1>
+							Show me a world record speedrun that is approximately...
+						</h1>
+						<input type="number" class="form-control" id="time-input" placeholder="#...">
+						<h1>
+						minutes long.</h1>
+						<button type="submit" class="btn btn-outline-light">Find Game</button>
+					</form>
+				</div>
+			</header>
 
-			</div>
-			<div id="video-description" class="row d-flex flex-lg-column justify-content-center">
 
+			<div class="content">
+				<div id="video-box" class="row d-flex justify-content-center">
+
+				</div>
+				<div class="d-flex justify-content-center">
+					<div id="video-description" class="row d-flex flex-lg-column align-items-center justify-content-center">
+
+					</div>
+				</div>
+
+				<footer class="row d-flex flex-column">
+					<div id="coffee">
+						<style>.bmc-button img{width: 27px !important;margin-bottom: 3px !important;box-shadow: none !important;border: none !important;vertical-align: middle !important;}.bmc-button{line-height: 36px !important;height:37px !important;text-decoration: none !important;display:inline-block !important;color:#000000 !important;background-color:#FFFFFF !important;border-radius: 3px !important;border: 1px solid transparent !important;padding: 0px 9px !important;font-size: 17px !important;letter-spacing:-0.08px !important;;box-shadow: 0px 1px 2px rgba(190, 190, 190, 0.5) !important;-webkit-box-shadow: 0px 1px 2px 2px rgba(190, 190, 190, 0.5) !important;margin: 0 auto !important;font-family:'Lato', sans-serif !important;-webkit-box-sizing: border-box !important;box-sizing: border-box !important;-o-transition: 0.3s all linear !important;-webkit-transition: 0.3s all linear !important;-moz-transition: 0.3s all linear !important;-ms-transition: 0.3s all linear !important;transition: 0.3s all linear !important;}.bmc-button:hover, .bmc-button:active, .bmc-button:focus {-webkit-box-shadow: 0px 1px 2px 2px rgba(190, 190, 190, 0.5) !important;text-decoration: none !important;box-shadow: 0px 1px 2px 2px rgba(190, 190, 190, 0.5) !important;opacity: 0.85 !important;color:#000000 !important;}</style><link href="https://fonts.googleapis.com/css?family=Lato&subset=latin,latin-ext" rel="stylesheet"><a class="bmc-button" target="_blank" href="https://www.buymeacoffee.com/abbotteverett"><img src="https://www.buymeacoffee.com/assets/img/BMC-btn-logo.svg" alt="Buy me a coffee"><span style="margin-left:5px">Buy me a coffee</span></a>
+
+					</div>
+					<p>
+						Powered by <a href="https://www.speedrun.com/">Speedrun.com</a>
+					</p>
+					<p>
+						Open Source Project by <a href="http://www.abbotteverett.com/">S. Everett Abbott</a> | 2018
+					</p>
+					<p>
+						<a href="#">Check out the Github Repository</a>
+					</p>
+				</footer>
 			</div>
+
 		</div>
 
 		<div class="modal fade" id="loading-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -39,7 +72,7 @@
 		      </div>
 					<div class="modal-body">
 						<div class="d-flex justify-content-center">
-							<span>This may take awhile.</span>
+							<p>This may take awhile.</p>
 						</div>
 					</div>
 		    </div>
@@ -56,13 +89,14 @@
 		      </div>
 					<div class="modal-body">
 						<div class="d-flex justify-content-center">
-							<span>Please enter a number.</span>
+							<p id="error-msg">Please enter a number.</p>
 						</div>
 					</div>
 		    </div>
 		  </div>
 		</div>
 
+		<!-- Scripts -->
 		<script src="./moment.min.js"></script>
 		<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 		<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>

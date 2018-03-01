@@ -5,8 +5,14 @@ const videoBox = document.getElementById('video-box');
 const input = document.getElementById('time-input');
 const baseURL = 'https://www.speedrun.com/api/v1';
 const bulkURL = '/games?_bulk=yes&max=1000';
-let numberOfRecordsInThousands = 13;
-let gameArrayToCheck;
+const baseDate = moment("201503", "YYYYMMDD");
+let numberOfMonths = moment().diff(baseDate, 'months');
+/*
+  Estimated record count based on speedun.com public
+  statistics. Update this if changes are significant.
+  RecordCount = 267.4412x + 2760
+*/
+let numberOfRecordsInThousands = Math.floor(((267.4412*numberOfMonths+2760)/1000)+1);
 let durationMin;
 let durationMax;
 
@@ -31,7 +37,9 @@ function generateRandomSpeedrun(e) {
       })
       .catch((err) => {
         $('#loading-modal').modal('hide');
-        console.log(err);
+        const errorMessage = document.getElementById('error-msg');
+        errorMessage.textContent = err;
+        $('#error-modal').modal('show');
       });
   } else {
     $('#error-modal').modal('show');
@@ -40,7 +48,6 @@ function generateRandomSpeedrun(e) {
   input.value = '';
 }
 function renderVideoDescription(data) {
-  console.log(data);
   const title = document.createElement('h4');
   const subtitle = document.createElement('h5');
   const userLink = document.createElement('a');
@@ -53,8 +60,19 @@ function renderVideoDescription(data) {
   socialContainer.classList = 'd-flex justify-content-center';
   iconBox.classList = 'd-flex flex-row icon-box';
   title.textContent = `${data.game_name} | ${data.run_time}`;
-  subtitle.textContent = `${data.category} | ${data.date} | ${data.platform}`;
-  userText.textContent = `${data.players.data[0].names.international}`;
+  // check if date exists
+  if (data.date) {
+    subtitle.textContent = `${data.category} | ${data.date} | ${data.platform}`;
+  } else {
+    subtitle.textContent = `${data.category} | ${data.platform}`;
+  }
+  // international might break here
+  // set text whether .names.international or .name if .names doesnt exist
+  if (data.players.data[0].names) {
+    userText.textContent = `${data.players.data[0].names.international}`;
+  } else {
+    userText.textContent = `${data.players.data[0].name}`;
+  }
   userText.classList.add('links');
   userLink.setAttribute('href', data.players.data[0].weblink);
 
@@ -114,12 +132,24 @@ function renderVideo(videoURL) {
       break;
     default:
       videoBox.textContent = 'Unsupported Video Type';
+      throw 'Unsupported Video Type';
   }
 }
 function renderTwitchVideo(videoURL) {
-    const check = '.tv/videos/';
-    const index = videoURL.indexOf(check);
-    const videoId = videoURL.slice(index+check.length);
+    // URL types that are broken currently
+    // "https://www.twitch.tv/blazephlozard/v/65615016"
+    console.log(videoURL);
+    const checkStandard = '.tv/videos/';
+    const checkAlternate = '/v/';
+    let index;
+    let videoId;
+    if (videoURL.includes(checkStandard)) {
+      index = videoURL.indexOf(checkStandard);
+      videoId = videoURL.slice(index+checkStandard.length);
+    } else {
+      index = videoURL.indexOf(checkAlternate);
+      videoId = videoURL.slice(index+checkAlternate.length);
+    }
     const iFrame = document.createElement('iframe');
     iFrame.setAttribute('src', `https://player.twitch.tv/?autoplay=false&video=v${videoId}`);
     iFrame.setAttribute('frameborder', 0);
@@ -130,6 +160,7 @@ function renderTwitchVideo(videoURL) {
     videoBox.appendChild(iFrame);
   }
 function renderYouTubeVideo(videoURL) {
+  // broken URL type "https://www.youtube.com/watch?v=rGh7EjJQjyI&feature=youtu.be"
   const check = '.com/watch?v=';
   const index = videoURL.indexOf(check);
   const videoId = videoURL.slice(index+check.length);
@@ -156,13 +187,16 @@ function renderYoutubeShortVideo(videoURL) {
   videoBox.appendChild(iFrame);
 }
 function checkURLType(videoURL) {
+  // twitchURL needs to also support http://
   const twitchURL = 'https://www.twitch.tv/';
+  const twitchURL2 = 'http://www.twitch.tv/';
   const youtubeURL = 'https://www.youtube.com/';
   const youtubeShortURL = 'https://youtu.be/';
   const hitboxURL = '';
   const vimeoURL = '';
   const nicoVideoURL = '';
-  if (videoURL.includes(twitchURL)) {
+  const twitterURL = '';
+  if (videoURL.includes(twitchURL) || videoURL.includes(twitchURL2)) {
     return 'TWITCH';
   } else if (videoURL.includes(youtubeURL)) {
     return 'YOUTUBE';
@@ -183,9 +217,12 @@ function setDurationMinAndMax(integer) {
   } else if (integer < 7201) {
     durationMin = integer*0.85;
     durationMax = integer*1.15;
-  } else {
+  } else if (integer < 14401) {
     durationMin = integer*0.80;
     durationMax = integer*1.20;
+  } else {
+    durationMin = 14401;
+    durationMax = 9999999999999999999999999999999;
   }
   durationMin = Math.floor(durationMin);
   durationMax = Math.floor(durationMax);
@@ -197,8 +234,6 @@ function fetchSpeedrunData() {
 
   if (databaseSliceToCheck === 0) {
     return getDatabaseSlice(urlToQuery);
-  } else if (databaseSliceToCheck === 12) {
-    return 'This slice has too few records';
   } else {
     urlToQuery += `&offset=${offset}`;
     return getDatabaseSlice(urlToQuery);
@@ -207,14 +242,12 @@ function fetchSpeedrunData() {
 function getDatabaseSlice(urlToQuery) {
   return axios.get(urlToQuery)
     .then((response) => {
-      gameArrayToCheck = response.data.data;
+      let gameArrayToCheck = response.data.data;
       return getRandomGameData(gameArrayToCheck);
-    })
-    .catch((err) => {
-      console.log(`ERROR: ${err}`);
     });
 }
 function getRandomGameData(array) {
+  // reduce data formatting tasks here where possible
   let index = getRandomInt(array.length-1);
   let id = array[index].id;
   let gameData = array[index];
@@ -233,20 +266,12 @@ function getRandomGameData(array) {
           let times = run.times;
           let videos = run.videos;
           let pTime = times.primary_t;
-          let convertedTime = toHHMMSS(pTime);
           if (pTime > durationMin-1 && pTime < durationMax+1) {
             if (videos) {
               if(!data) {
                 console.log('Success!');
                 data = {
-                  run_id: run.id,
-                  game_id: run.game,
-                  category_id: run.category,
-                  platform_id: run.system.platform,
-                  date: run.date,
-                  user: run.players,
-                  time: convertedTime,
-                  videos: videos
+                  run_id: run.id
                 };
                 successfulSearch = true;
               }
@@ -257,9 +282,7 @@ function getRandomGameData(array) {
       if (successfulSearch) {
         return formatDataProper(data);
       } else if (array.length < 1) {
-        return {
-          err: 'could not find'
-        };
+        throw 'Something went wrong. Try your search again!';
       } else {
         return getRandomGameData(array);
       }
@@ -270,17 +293,19 @@ function formatDataProper(data) {
   return axios.get(`${baseURL}/runs/${data.run_id}?embed=players,category,game,platform`)
     .then((res) => {
       const runInfo = res.data.data;
+      console.log(runInfo);
       runInfoToSend.category = runInfo.category.data.name;
+      // international can trigger an error sometimes
       runInfoToSend.game_name = runInfo.game.data.names.international;
       runInfoToSend.platform = runInfo.platform.data.name;
       runInfoToSend.players = runInfo.players;
       runInfoToSend.videos = runInfo.videos;
-      runInfoToSend.date = moment(runInfo.date).format('MMMM Do YYYY');
+      // check if data exists
+      if (runInfo.date) {
+        runInfoToSend.date = moment(runInfo.date).format('MMMM Do YYYY');
+      }
       runInfoToSend.run_time = toHHMMSS(runInfo.times.primary_t);
       return runInfoToSend;
-    })
-    .catch((err) => {
-      console.log(err);
     });
 }
 function getRandomInt(max) {
