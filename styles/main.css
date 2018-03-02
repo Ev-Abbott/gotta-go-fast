@@ -1,3 +1,9 @@
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
 body {
 	background-color: black;
 	font-family: 'Press Start 2P', cursive;
@@ -38,6 +44,7 @@ h5 {
 
 p {
 	font-size: 0.75em;
+  text-align: center;
 	margin: 0;
 }
 
@@ -74,6 +81,17 @@ footer {
 .divider {
 	margin-right: 15px;
 }
+.system-name {
+	font-size: 0.5em;
+}
+
+#system-dropdown{
+	margin-left: 10px;
+}
+
+#dropdownMenuButton {
+	font-size: 0.75em;
+}
 
 #time-input{
 	width: 100px;
@@ -89,6 +107,11 @@ footer {
 	max-width: 510px;
 }
 
+#platform {
+	display: none;
+	margin-bottom: 10px;
+}
+
 #video-description {
 	padding: 10px;
 	margin-bottom: 15px;
@@ -99,6 +122,10 @@ footer {
 	margin-bottom: 15px;
 }
 
-#coffee {
+#share-links {
+	margin-right: 15px;
+}
+
+#social {
 	margin-bottom: 15px;
 }

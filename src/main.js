@@ -1,12 +1,17 @@
-(function(document) {
+(function(document, $) {
   const speedrunSearchForm = document.getElementById('speedrun-search');
   const formContainer = document.getElementById('form-container');
+  const dropdownContainer = document.getElementById('platform');
+  const dropdownMenu = document.getElementById('system-dropdown-menu');
+  const dropdownMenuButton = document.getElementById('dropdownMenuButton');
+  const checkbox = document.getElementById('platformCheck');
   const videoDescription = document.getElementById('video-description');
   const videoBox = document.getElementById('video-box');
   const input = document.getElementById('time-input');
   const baseURL = 'https://www.speedrun.com/api/v1';
   const bulkURL = '/games?_bulk=yes&max=1000';
   const baseDate = moment("201503", "YYYYMMDD");
+  let systemSelected;
   let numberOfMonths = moment().diff(baseDate, 'months');
   /*
     Estimated record count based on speedun.com public
@@ -16,9 +21,41 @@
   let numberOfRecordsInThousands = Math.floor(((267.4412*numberOfMonths+2760)/1000)+1);
   let durationMin;
   let durationMax;
+  const systemsToDisplay = ['Android', 'Arcade', 'Dreamcast', 'Game Boy', 'Game Boy Advance',
+  'Game Boy Color', 'GameCube', 'iOS', 'Linux', 'Macintosh', 'MS-DOS', 'New Nintendo 3DS', 'Nintendo 3DS',
+  'Nintendo 64', 'Nintendo DS', 'Nintendo Entertainment System', 'PC', 'PlayStation',
+  'PlayStation 2', 'PlayStation 3', 'PlayStation 4', 'PlayStation Portable', 'PlayStation Vita',
+  'Sega Genesis', 'Sega Saturn', 'Super Nintendo', 'Switch', 'Web', 'Wii', 'Wii U', 'Xbox', 'Xbox 360', 'Xbox One'];
 
+  systemsToDisplay.forEach((system) => {
+    const a = document.createElement('a');
+    a.classList = 'dropdown-item system-name';
+
+    a.setAttribute('href', '#');
+    a.textContent = system;
+    dropdownMenu.appendChild(a);
+  });
+  dropdownContainer.style.display = 'none';
+  checkbox.addEventListener('click', checkboxSelected);
+  dropdownMenu.addEventListener('click', dropdownOptionSelected);
   speedrunSearchForm.addEventListener('submit', generateRandomSpeedrun);
 
+  function checkboxSelected(e){
+    if (dropdownContainer.style.display === 'none') {
+      dropdownContainer.style.display = 'flex';
+      dropdownContainer.style['flex-direction'] = 'column';
+      dropdownContainer.style['align-items'] = 'center';
+    } else {
+      dropdownContainer.style.display = 'none';
+      systemSelected = undefined;
+    }
+  }
+  function dropdownOptionSelected(e){
+    e.preventDefault();
+    const system = e.target.textContent;
+    systemSelected = system;
+    dropdownMenuButton.textContent = system;
+  }
   function generateRandomSpeedrun(e) {
     e.preventDefault();
     const videoDescription = document.createElement('div');
@@ -30,7 +67,8 @@
       $('#loading-modal').modal('show');
       clearVideoDescription();
       clearVideoBox();
-      fetchSpeedrunData()
+
+      fetchSpeedrunData(systemSelected)
         .then((res) => {
           renderVideoDescription(res);
           renderVideo(res.videos.links[0].uri);
@@ -45,8 +83,6 @@
     } else {
       $('#error-modal').modal('show');
     }
-
-    input.value = '';
   }
   function renderVideoDescription(data) {
     const title = document.createElement('h4');
@@ -227,16 +263,19 @@
     durationMin = Math.floor(durationMin);
     durationMax = Math.floor(durationMax);
   }
-  function fetchSpeedrunData() {
+  function fetchSpeedrunData(system) {
     let databaseSliceToCheck = getRandomInt(numberOfRecordsInThousands);
     let urlToQuery = `${baseURL}${bulkURL}`;
     let offset = databaseSliceToCheck * 1000;
-
-    if (databaseSliceToCheck === 0) {
-      return getDatabaseSlice(urlToQuery);
+    if (!system) {
+      if (databaseSliceToCheck === 0) {
+        return getDatabaseSlice(urlToQuery);
+      } else {
+        urlToQuery += `&offset=${offset}`;
+        return getDatabaseSlice(urlToQuery);
+      }
     } else {
-      urlToQuery += `&offset=${offset}`;
-      return getDatabaseSlice(urlToQuery);
+      return getDatabaseSliceBySystem(system)
     }
   }
   function getDatabaseSlice(urlToQuery) {
@@ -245,6 +284,37 @@
         let gameArrayToCheck = response.data.data;
         return getRandomGameData(gameArrayToCheck);
       });
+  }
+  function getDatabaseSliceBySystem(system, gameArray = [], offset) {
+    return axios.get(`${baseURL}/platforms?max=200`)
+      .then((response) => {
+        systemsList = response.data.data;
+        let call;
+        systemsList.forEach((platform) => {
+          if (platform.name === system) {
+            call = platform.links[1].uri;
+          }
+        });
+        if (offset) {
+          return axios.get(`${call}&_bulk=yes&max=1000&offset=${offset}`);
+        } else {
+          return axios.get(`${call}&_bulk=yes&max=1000`);
+        }
+      })
+      .then((response) => {
+        if (gameArray.length < 1) {
+          gameArray = response.data.data;
+        } else {
+          gameArray = gameArray.concat(response.data.data);
+        }
+        if (response.data.pagination.size === 1000) {
+          offset = response.data.pagination.offset + 1000;
+          return getDatabaseSliceBySystem(system, gameArray, offset);
+        } else {
+          return getRandomGameData(gameArray);
+        }
+      });
+
   }
   function getRandomGameData(array) {
     // reduce data formatting tasks here where possible
@@ -330,5 +400,4 @@
       videoDescription.removeChild(videoDescription.firstChild);
     }
   }
-
-})(document);
+})(document, $);

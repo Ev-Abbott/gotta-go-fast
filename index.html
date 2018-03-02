@@ -3,6 +3,11 @@
 	<head>
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<meta property="og:image" content="http://GottaGoFast.Games/screenshot.png" />
+		<meta property="og:type" content="website" />
+		<meta property="og:url" content="http://GottaGoFast.Games" />
+		<meta property="og:title" content="Find a Random Video Game World Record!" />
+		<meta property="og:video-description" content="Input a length of time and you'll be provide a random world record video game speedrun!" />
 		<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
 		<link rel="icon" href="favicon.ico" type="image/x-icon">
 		<title>Find a Cool Speedrun!</title>
@@ -26,9 +31,35 @@
 						<h1>
 							Show me a world record speedrun that is approximately...
 						</h1>
-						<input type="number" class="form-control" id="time-input" placeholder="#...">
-						<h1>
-						minutes long.</h1>
+						<div>
+							<input type="number" class="form-control" id="time-input" placeholder="#...">
+							<label for="time-input">
+								<h1>
+								minutes long.</h1>
+							</label>
+						</div>
+						<div class="form-check">
+						  <input class="form-check-input" type="checkbox" value="" id="platformCheck">
+						  <label class="form-check-label" for="platformCheck">
+						    BETA: Specify a platform?
+						  </label>
+						</div>
+						<div id="platform">
+							<div class="d-flex flex-row">
+								<h1>On the...</h1>
+								<div id="system-dropdown" class="dropdown">
+								  <button class="btn btn-outline-light dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+								    Pick a system
+								  </button>
+								  <div id="system-dropdown-menu" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+								  </div>
+								</div>
+							</div>
+							<p>
+								Note: Platform refers to the system the game exists on, not the what system the runner used. This may lead to unexpected results.
+							</p>
+						</div>
+
 						<button type="submit" class="btn btn-outline-light">Find Game</button>
 					</form>
 				</div>
@@ -46,10 +77,31 @@
 				</div>
 
 				<footer class="row d-flex flex-column">
-					<div id="coffee">
-						<style>.bmc-button img{width: 27px !important;margin-bottom: 3px !important;box-shadow: none !important;border: none !important;vertical-align: middle !important;}.bmc-button{line-height: 36px !important;height:37px !important;text-decoration: none !important;display:inline-block !important;color:#000000 !important;background-color:#FFFFFF !important;border-radius: 3px !important;border: 1px solid transparent !important;padding: 0px 9px !important;font-size: 17px !important;letter-spacing:-0.08px !important;;box-shadow: 0px 1px 2px rgba(190, 190, 190, 0.5) !important;-webkit-box-shadow: 0px 1px 2px 2px rgba(190, 190, 190, 0.5) !important;margin: 0 auto !important;font-family:'Lato', sans-serif !important;-webkit-box-sizing: border-box !important;box-sizing: border-box !important;-o-transition: 0.3s all linear !important;-webkit-transition: 0.3s all linear !important;-moz-transition: 0.3s all linear !important;-ms-transition: 0.3s all linear !important;transition: 0.3s all linear !important;}.bmc-button:hover, .bmc-button:active, .bmc-button:focus {-webkit-box-shadow: 0px 1px 2px 2px rgba(190, 190, 190, 0.5) !important;text-decoration: none !important;box-shadow: 0px 1px 2px 2px rgba(190, 190, 190, 0.5) !important;opacity: 0.85 !important;color:#000000 !important;}</style><link href="https://fonts.googleapis.com/css?family=Lato&subset=latin,latin-ext" rel="stylesheet"><a class="bmc-button" target="_blank" href="https://www.buymeacoffee.com/abbotteverett"><img src="https://www.buymeacoffee.com/assets/img/BMC-btn-logo.svg" alt="Buy me a coffee"><span style="margin-left:5px">Buy me a coffee</span></a>
+					<div id="social" class="d-flex flex-row justify-content-center">
+						<div class="d-flex justify-content-center">
+							<!-- AddToAny BEGIN -->
+							<div id="share-links" class="a2a_kit a2a_kit_size_32 a2a_default_style">
+								<a class="a2a_dd" href="https://www.addtoany.com/share"></a>
+								<a class="a2a_button_facebook"></a>
+								<a class="a2a_button_twitter"></a>
+								<a class="a2a_button_reddit"></a>
+								<a class="a2a_button_tumblr"></a>
+							</div>
+							<script>
+							var a2a_config = a2a_config || {};
+							a2a_config.linkname = "Gotta Go Fast - Speedrun Randomizer";
+							a2a_config.linkurl = "http://gottagofast.games/";
+							</script>
+							<script async src="https://static.addtoany.com/menu/page.js"></script>
+							<!-- AddToAny END -->
+						</div>
+						<div>
+							<style>.bmc-button img{width: 27px !important;margin-bottom: 3px !important;box-shadow: none !important;border: none !important;vertical-align: middle !important;}.bmc-button{line-height: 36px !important;height:37px !important;text-decoration: none !important;display:inline-block !important;color:#000000 !important;background-color:#FFFFFF !important;border-radius: 3px !important;border: 1px solid transparent !important;padding: 0px 9px !important;font-size: 17px !important;letter-spacing:-0.08px !important;;box-shadow: 0px 1px 2px rgba(190, 190, 190, 0.5) !important;-webkit-box-shadow: 0px 1px 2px 2px rgba(190, 190, 190, 0.5) !important;margin: 0 auto !important;font-family:'Lato', sans-serif !important;-webkit-box-sizing: border-box !important;box-sizing: border-box !important;-o-transition: 0.3s all linear !important;-webkit-transition: 0.3s all linear !important;-moz-transition: 0.3s all linear !important;-ms-transition: 0.3s all linear !important;transition: 0.3s all linear !important;}.bmc-button:hover, .bmc-button:active, .bmc-button:focus {-webkit-box-shadow: 0px 1px 2px 2px rgba(190, 190, 190, 0.5) !important;text-decoration: none !important;box-shadow: 0px 1px 2px 2px rgba(190, 190, 190, 0.5) !important;opacity: 0.85 !important;color:#000000 !important;}</style><link href="https://fonts.googleapis.com/css?family=Lato&subset=latin,latin-ext" rel="stylesheet"><a class="bmc-button" target="_blank" href="https://www.buymeacoffee.com/abbotteverett"><img src="https://www.buymeacoffee.com/assets/img/BMC-btn-logo.svg" alt="Buy me a coffee"><span style="margin-left:5px">Buy me a coffee</span></a>
 
+						</div>
 					</div>
+
+
 					<p>
 						Powered by <a href="https://www.speedrun.com/">Speedrun.com</a>
 					</p>
