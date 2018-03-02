@@ -169,7 +169,7 @@
         break;
       default:
         videoBox.textContent = 'Unsupported Video Type';
-        throw 'Unsupported Video Type';
+        throw `Unsupported Video Type! VideoURL: ${videoURL}`;
     }
   }
   function renderTwitchVideo(videoURL) {

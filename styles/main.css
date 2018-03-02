@@ -85,6 +85,10 @@ footer {
 	font-size: 0.5em;
 }
 
+#platformCheckLabel{
+  font-size: 0.75em;
+}
+
 #system-dropdown{
 	margin-left: 10px;
 }
